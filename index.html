@@ -71,7 +71,7 @@
   <script>
     // MQTT broker settings
     const broker = 'mqtt-dashboard.com';
-    const port = 8000;
+    const port = 8884;
     const topic = '/vaow/ev';
     
     // Create an MQTT client instance
@@ -82,7 +82,7 @@
     connectBtn.addEventListener('click', () => {
 	
 	
-	client = mqtt.connect(`ws://${broker}:${port}/mqtt`);
+	client = mqtt.connect(`wss://${broker}:${port}/mqtt`);
 	
 	
 	
