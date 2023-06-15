@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MQTT Data Table</title>
+  
+  <!-- Material-UI CSS -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/milligram@1.4.1/dist/milligram.min.css">
+  
+  <!-- MQTT.js library -->
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  
+  <style>
+  th {
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+
+  z-index: 1;
+}
+  
+    .container {
+      padding: 20px;
+    }
+    .data-container {
+      max-height: 500px;
+      overflow-y: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+	  overflow-y: auto;
+    }
+    .button-container {
+      margin-top: 20px;
+    }
+    tr:not(:last-child) {
+      border-bottom: 1px solid #ccc;
+    }
+    tr:last-child {
+      border-bottom: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>MQTT Data Table</h2>
+    <div class="button-container">
+      <button id="connect-btn" class="button">Connect</button>
+      <button id="disconnect-btn" class="button" disabled>Disconnect</button>
+    </div>
+    <div class="data-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Timestamp</th>
+            <th>ID</th>
+            <th>Extended</th>
+            <th>RTR</th>
+            <th>Length</th>
+            <th>Data</th>
+          </tr>
+        </thead>
+        <tbody id="data-table"></tbody>
+      </table>
+    </div>
+  </div>
+  
+  <script>
+    // MQTT broker settings
+    const broker = 'mqtt-dashboard.com';
+    const port = 8000;
+    const topic = '/vaow/ev';
+    
+    // Create an MQTT client instance
+    var client;
+    
+    // Connect button
+    const connectBtn = document.getElementById('connect-btn');
+    connectBtn.addEventListener('click', () => {
+	
+	
+	client = mqtt.connect(`ws://${broker}:${port}/mqtt`);
+	
+	
+	
+	
+      client.on('connect', () => {
+        console.log('Connected to MQTT broker');
+        client.subscribe(topic);
+        connectBtn.disabled = true;
+        disconnectBtn.disabled = false;
+      });
+      client.on('error', (error) => {
+        console.error('Error connecting to MQTT broker:', error);
+      });
+      client.on('reconnect', () => {
+        console.log('Reconnecting to MQTT broker');
+      });
+      client.on('offline', () => {
+        console.log('Disconnected from MQTT broker');
+      });
+      client.on('message', (topic, message) => {
+        const data = JSON.parse(message.toString());
+        displayData(data);
+      });
+	  
+	  
+	   client.on('close', () => {
+      console.log('Disconnected from MQTT broker');
+      connectBtn.disabled = false;
+      disconnectBtn.disabled = true;
+    });
+	  
+	  
+	  
+    });
+    
+    // Disconnect button
+    const disconnectBtn = document.getElementById('disconnect-btn');
+    disconnectBtn.addEventListener('click', () => {
+      client.end();
+    });
+    
+    // Display received data in the table
+    function displayData(data) {
+      const tableBody = document.getElementById('data-table');
+      
+      // Create table row
+      const row = document.createElement('tr');
+      
+      // Timestamp
+      const timestampCell = document.createElement('td');
+      timestampCell.textContent = new Date().toLocaleString();
+      row.appendChild(timestampCell);
+      
+      // ID
+      const idCell = document.createElement('td');
+      idCell.textContent = data.id;
+      row.appendChild(idCell);
+      
+      // Extended
+      const extendedCell = document.createElement('td');
+      extendedCell.textContent = data.extended;
+      row.appendChild(extendedCell);
+      
+      // RTR
+      const rtrCell = document.createElement('td');
+      rtrCell.textContent = data.rtr;
+      row.appendChild(rtrCell);
+      
+      // Length
+      const lengthCell = document.createElement('td');
+      lengthCell.textContent = data.length;
+      row.appendChild(lengthCell);
+      
+      // Data
+      const dataCell = document.createElement('td');
+      dataCell.textContent = JSON.stringify(data.data);
+      row.appendChild(dataCell);
+      
+      // Add row to table body
+      tableBody.appendChild(row);
+      
+      // Autoscroll to the bottom
+      tableBody.scrollTop = tableBody.scrollHeight;
+    }
+    
+    // Handle MQTT client disconnection
+   
+  </script>
+</body>
+</html>
