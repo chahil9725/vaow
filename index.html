@@ -45,6 +45,9 @@
   </style>
 </head>
 <body>
+  <label id="voltageLabel">test voltAGE</label>
+<label id="currentLabel">TEST CURRENT</label>
+
   <div class="container">
     <h2>MQTT Data Table</h2>
     <div class="button-container">
@@ -105,6 +108,7 @@
       client.on('message', (topic, message) => {
         const data = JSON.parse(message.toString());
         displayData(data);
+        decodeParameters(message.toString());
       });
 	  
 	  
@@ -170,6 +174,32 @@
     
     // Handle MQTT client disconnection
    
+
+    function decodeParameters(jsonString) {
+  // Parse the JSON string into an object
+  const jsonObject = JSON.parse(jsonString);
+
+  // Extract the voltage and current bytes from the data array
+  const voltageHighByte = jsonObject.data[0];
+  const voltageLowByte = jsonObject.data[1];
+  const currentHighByte = jsonObject.data[2];
+  const currentLowByte = jsonObject.data[3];
+
+  // Combine the voltage bytes into a 16-bit integer
+  const voltage = (voltageHighByte << 8) | voltageLowByte;
+
+  // Combine the current bytes into a 16-bit integer
+  const current = (currentHighByte << 8) | currentLowByte;
+
+  // Display the voltage and current values in HTML labels
+  document.getElementById("voltageLabel").textContent = "Voltage: " + voltage;
+  document.getElementById("currentLabel").textContent = "Current: " + current;
+}
+
+
+
+
+
   </script>
 </body>
 </html>
