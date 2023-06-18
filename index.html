@@ -182,8 +182,8 @@
   // Extract the voltage and current bytes from the data array
   const voltageHighByte = jsonObject.data[0];
   const voltageLowByte = jsonObject.data[1];
-  const currentHighByte = jsonObject.data[3];
-  const currentLowByte = jsonObject.data[4];
+  const currentHighByte = jsonObject.data[4];
+  const currentLowByte = jsonObject.data[5];
 
   // Combine the voltage bytes into a 16-bit integer
   const voltage = (voltageHighByte << 8) | voltageLowByte;
@@ -192,7 +192,7 @@
   const current = (currentHighByte << 8) | currentLowByte;
 
 
-  
+
   // Display the voltage and current values in HTML labels
   document.getElementById("voltageLabel").textContent = "Voltage: " + voltage;
   document.getElementById("currentLabel").textContent = "Current: " + current;
